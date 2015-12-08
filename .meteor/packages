@@ -24,3 +24,5 @@ cosmos:browserify
 
 npm-container
 react
+semantic:ui
+flemay:less-autoprefixer
