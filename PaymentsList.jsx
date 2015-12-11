@@ -1,9 +1,28 @@
 PaymentsList = React.createClass({
   mixins: [ReactMeteorData],
 
+  getInitialState(){
+    return {
+      columns: [
+        {key: 'createdAt',    label: 'Date'},
+        {key: 'customerName', label: 'Customer'},
+        {key: 'amount',       label: 'Amount'},
+        {key: 'tourName',     label: 'Tour'}
+      ],
+      filterable: ['customerName', 'tourName'],
+      filterText: "",
+      sort: {column: 'createdAt', direction: 'desc'},
+      itemsPerPage: 20
+    };
+  },
+
   getMeteorData() {
     // console.log(`Subscribing with filter "${this.state.filterText}"`);
-    var handle = Meteor.subscribe('payments', this.state.filterText);
+    var handle = Meteor.subscribe('payments', {
+      filterText: this.state.filterText,
+      itemsPerPage: this.state.itemsPerPage,
+      sort: this.state.sort
+    });
 
     return {
       // can be used to show loading state
@@ -28,19 +47,13 @@ PaymentsList = React.createClass({
 
     return(
       <div>
-        <Table className="ui celled table" data={this.getPayments()}
-          itemsPerPage={25} pageButtonLimit={5}
         {tableFilter}
-          sortable={true} defaultSort={{column: 'createdAt', direction: 'desc'}}
-          filterable={['customerName','tourName']}
-          columns={[
-            {key: 'createdAt',    label: 'Date'},
-            {key: 'customerName', label: 'Customer'},
-            {key: 'amount',       label: 'Amount'},
-            {key: 'tourName',     label: 'Tour'}
-          ]}
+        <Table ref="table" className="ui celled table" data={this.data.payments}
+          itemsPerPage={this.state.itemsPerPage} pageButtonLimit={5}
+          sortable={true} defaultSort={this.state.sort}
+          columns={this.state.columns}
+          filterable={this.state.filterable} hideFilterInput
          >
-
        </Table>
       </div>
     )
